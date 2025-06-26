@@ -32,14 +32,20 @@ $(document).ready(function () {
     }
   
     const path = sizeFolder ? `/images/${field}/${sizeFolder}/${filename}` : `/images/${field}/${filename}`;
-    image.src = path;
-    image.onerror = () => {
-      image.style.display = 'none';
-      image.src = '';
-    };
-    image.onload = () => {
+
+fetch(path)
+  .then(response => {
+    if (response.ok) {
+      image.src = path;
       image.style.display = 'block';
-    };
+    } else {
+      image.style.display = 'none'; // приховати, якщо файлу нема
+    }
+  })
+  .catch(() => {
+    image.style.display = 'none';
+  });
+
   }
   
   function calculatePrice() {
