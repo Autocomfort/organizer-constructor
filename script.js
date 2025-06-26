@@ -31,7 +31,7 @@ $(document).ready(function () {
       return;
     }
   
-    const path = sizeFolder ? `C:/Users/PC/Desktop/organizer-kalk — копия/images/${field}/${sizeFolder}/${filename}` : `C:/Users/PC/Desktop/organizer-kalk — копия/images/${field}/${filename}`;
+    const path = sizeFolder ? `/images/${field}/${sizeFolder}/${filename}` : `/images/${field}/${filename}`;
     image.src = path;
     image.onerror = () => {
       image.style.display = 'none';
