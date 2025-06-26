@@ -205,7 +205,7 @@
                 image.style.display = 'none';
                 image.src = '';
             } else {
-                const path = sizeFolder ? `C:/Users/PC/Desktop/калькулятор/images/${field}/${sizeFolder}/${filename}` : `C:/Users/PC/Desktop/калькулятор/images/${field}/${filename}`;
+                const path = sizeFolder ? `/images/${field}/${sizeFolder}/${filename}` : `/images/${field}/${filename}`;
                 image.style.display = 'block';
                 image.src = path;
             }
