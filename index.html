@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор органайзера</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .preview-container {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .preview-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Конструктор органайзера</h1>
+
+    <div class="preview-container">
+        <img id="size-img" src="" alt="Size">
+        <img id="color-img" src="" alt="Color">
+        <img id="thread-img" src="" alt="Thread">
+        <img id="kant-img" src="" alt="Kant">
+        <img id="lining-img" src="" alt="Lining">
+        <img id="embroidery-img" src="" alt="Embroidery">
+        <img id="badge-img" src="" alt="Badge">
+    </div>
+
+    <form id="config-form">
+        <label>Розмір:
+            <select name="size" required>
+                <option value="1000">35 см</option>
+                <option value="1500">50 см</option>
+                <option value="2000">65 см</option>
+                <option value="2500">80 см</option>
+                <option value="3000">100 см</option>
+            </select>
+        </label><br><br>
+
+        <label>Колір:
+            <select name="color" required>
+                <option value="black">Чорний</option>
+                <option value="beige">Бежевий</option>
+                <option value="gray">Сірий</option>
+                <option value="brown">Коричневий</option>
+                <option value="blue">Синій</option>
+                <option value="red">Червоний</option>
+            </select>
+        </label><br><br>
+
+        <label>Колір нитки:
+            <select name="thread" required>
+                <option value="black">Чорна</option>
+                <option value="beige">Бежева</option>
+                <option value="gray">Сіра</option>
+                <option value="brown">Коричнева</option>
+                <option value="blue">Синя</option>
+                <option value="red">Червона</option>
+            </select>
+        </label><br><br>
+
+        <label>Колір канту:
+            <select name="kant">
+                <option value="none">Без канту</option>
+                <option value="beige">Бежевий</option>
+                <option value="gray">Сірий</option>
+                <option value="brown">Коричневий</option>
+                <option value="blue">Синій</option>
+                <option value="red">Червоний</option>
+            </select>
+        </label><br><br>
+
+        <label>Колір підкладки:
+            <select name="lining">
+                <option value="none">Без підкладки</option>
+                <option value="black">Чорна</option>
+                <option value="blue">Синя</option>
+                <option value="red">Червона</option>
+                <option value="yellow">Жовта</option>
+                <option value="aqua">Бірюзова</option>
+            </select>
+        </label><br><br>
+
+        <label>Тип фіксації кришки:
+            <select name="lid">
+                <option value="velcro">На липучці</option>
+                <option value="magnet">На магніті</option>
+            </select>
+        </label><br><br>
+
+        <label>Вишивка:
+            <select id="embroidery-select">
+                <option value="none">Без вишивки</option>
+                <option value="audi">Audi</option>
+                <option value="bmw">BMW</option>
+                <option value="mercedes">Mercedes</option>
+                <option value="vw">Volkswagen</option>
+            </select>
+        </label><br><br>
+
+        <label>Металевий шильд:
+            <select id="badge-select">
+                <option value="none">Без шильда</option>
+                <option value="audi">Audi</option>
+                <option value="bmw">BMW</option>
+                <option value="mercedes">Mercedes</option>
+                <option value="vw">Volkswagen</option>
+            </select>
+        </label><br><br>
+
+        <p>Загальна ціна: <strong id="total-price">0</strong> грн</p>
+        <button type="button" id="buy-button">Купити</button>
+    </form>
+
+    <div id="order-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal">&times;</span>
+            <h3>Оформлення замовлення</h3>
+            <label>Ім'я:<br><input type="text" id="customer-name"></label><br><br>
+            <label>Телефон:<br><input type="tel" id="customer-phone"></label><br><br>
+            <button type="button" onclick="submitOrder()">Надіслати</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#embroidery-select').select2({ placeholder: 'Оберіть вишивку', allowClear: true })
+                .on('change', calculatePrice);
+            $('#badge-select').select2({ placeholder: 'Оберіть шильд', allowClear: true })
+                .on('change', calculatePrice);
+        });
+
+        const form = document.getElementById('config-form');
+        const totalPrice = document.getElementById('total-price');
+
+        const previewImages = {
+            size: document.getElementById('size-img'),
+            color: document.getElementById('color-img'),
+            thread: document.getElementById('thread-img'),
+            kant: document.getElementById('kant-img'),
+            lining: document.getElementById('lining-img'),
+            embroidery: document.getElementById('embroidery-img'),
+            badge: document.getElementById('badge-img')
+        };
+
+        function getSelectValue(id) {
+            const el = document.getElementById(id);
+            return el ? el.value : 'none';
+        }
+
+        function updateImage(field, filename, sizeFolder = '') {
+            const image = previewImages[field];
+            if (!filename || filename === 'none') {
+                image.style.display = 'none';
+                image.src = '';
+            } else {
+                const path = sizeFolder ? `C:/Users/PC/Desktop/калькулятор/images/${field}/${sizeFolder}/${filename}` : `C:/Users/PC/Desktop/калькулятор/images/${field}/${filename}`;
+                image.style.display = 'block';
+                image.src = path;
+            }
+        }
+
+        function calculatePrice() {
+            const data = new FormData(form);
+            const sizeVal = data.get('size');
+            const size = parseInt(sizeVal);
+            let price = size;
+
+            if (data.get('kant') !== 'none') price += 50;
+            if (data.get('lining') !== 'none') price += 150;
+
+            const embroidery = getSelectValue('embroidery-select');
+            if (embroidery !== 'none') price += 550;
+
+            const badge = getSelectValue('badge-select');
+            if (badge !== 'none') price += 200;
+
+            const lid = data.get('lid');
+            if (lid === 'magnet') {
+                switch (size) {
+                    case 1000: price += 250; break;
+                    case 1500: price += 300; break;
+                    case 2000: price += 350; break;
+                    case 2500:
+                    case 3000: price += 400; break;
+                }
+            }
+
+            totalPrice.textContent = price;
+
+            updateImage('size', `size_${sizeVal}.png`, sizeVal);
+            updateImage('color', `color_${data.get('color')}.png`, sizeVal);
+            updateImage('thread', `${data.get('thread')}.png`, sizeVal);
+            updateImage('kant', `${data.get('kant')}.png`, sizeVal);
+            updateImage('lining', `${data.get('lining')}.png`, sizeVal);
+            updateImage('embroidery', `${embroidery}.png`);
+            updateImage('badge', `${badge}.png`);
+        }
+
+        form.addEventListener('change', calculatePrice);
+        window.addEventListener('load', calculatePrice);
+
+        document.getElementById('buy-button').addEventListener('click', function () {
+            document.getElementById('order-modal').style.display = 'block';
+        });
+
+        document.getElementById('close-modal').addEventListener('click', function () {
+            document.getElementById('order-modal').style.display = 'none';
+        });
+
+        function submitOrder() {
+            const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            if (!name || !phone) {
+                alert('Будь ласка, заповніть всі поля');
+                return;
+            }
+            alert(`Дякуємо, ${name}! Ваше замовлення прийнято.`);
+            document.getElementById('order-modal').style.display = 'none';
+            form.reset();
+            calculatePrice();
+        }
+    </script>
+</body>
+
+</html>
