@@ -31,7 +31,7 @@ $(document).ready(function () {
       return;
     }
   
-    const path = sizeFolder ? `/images/${field}/${sizeFolder}/${filename}` : `/images/${field}/${filename}`;
+    const path = sizeFolder ? `/organizer-constructor/images/${field}/${sizeFolder}/${filename}` : `/organizer-constructor/images/${field}/${filename}`;
 
 fetch(path)
   .then(response => {
